@@ -1,0 +1,40 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "serviceRequestNumber": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        }
+    },
+    "functions": [],
+    "variables": {
+        "name": "[concat('rg-', parameters('name'), '-', parameters('location'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-10-01",
+            "location": "[parameters('location')]",
+            "name": "[variables('name')]",
+            "tags": {
+                "swoBuild": "[parameters('serviceRequestNumber')]"
+            }
+        }
+    ],
+    "outputs": {}
+}
