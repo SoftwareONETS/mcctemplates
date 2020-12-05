@@ -24,7 +24,7 @@
     "functions": [],
     "variables": {
         "location": "[resourceGroup().location]",
-        "storageAccountName": "[concat(toLower(parameters('storageAccountName')), resourceGroup().id)]"
+        "storageAccountName": "[concat(toLower(parameters('storageAccountName')), uniqueString(resourceGroup().id))]"
     },
     "resources": [
         {
