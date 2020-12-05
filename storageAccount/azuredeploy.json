@@ -36,7 +36,8 @@
                 "swoBuild": "[parameters('serviceRequestNumber')]"
             },
             "sku": {
-                "name": "[parameters('storageAccountType')]"
+                "name": "[parameters('storageAccountType')]",
+                "tier": "Standard"
             }
         }
     ],
