@@ -30,14 +30,13 @@
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
             "location": "[variables('location')]",
-            "kind": "BlobStorage",
+            "kind": "StorageV2",
             "name": "[parameters('storageAccountName')]",
             "tags": {
                 "swoBuild": "[parameters('serviceRequestNumber')]"
             },
             "sku": {
-                "name": "[parameters('storageAccountType')]",
-                "tier": "Standard"
+                "name": "[parameters('storageAccountType')]"
             }
         }
     ],
