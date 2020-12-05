@@ -31,7 +31,13 @@
             "apiVersion": "2019-06-01",
             "location": "[variables('location')]",
             "kind": "BlobStorage",
-            "name": 
+            "name": "[parameters('storageAccountName')]",
+            "tags": {
+                "swoBuild": "[parameters('serviceRequestNumber')]"
+            },
+            "sku": {
+                "name": "[parameters('storageAccountType')]"
+            }
         }
     ],
     "outputs": {}
