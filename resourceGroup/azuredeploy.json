@@ -37,9 +37,9 @@
         }
     ],
     "outputs": {
-        "resourceGroupName": {
+        "deployment": {
             "type": "string",
-            "value": "[variables('name')]"
+            "value": "[deployment()]"
         }
     }
 }
