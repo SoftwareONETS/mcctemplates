@@ -23,7 +23,8 @@
     },
     "functions": [],
     "variables": {
-        "location": "[resourceGroup().location]"
+        "location": "[resourceGroup().location]",
+        "storageAccountName": "[concat(toLower(parameters('storageAccountName')), resourceGroup().id)]"
     },
     "resources": [
         {
@@ -31,7 +32,7 @@
             "apiVersion": "2019-06-01",
             "location": "[variables('location')]",
             "kind": "StorageV2",
-            "name": "[parameters('storageAccountName')]",
+            "name": "[variables('storageAccountName')]",
             "tags": {
                 "swoBuild": "[parameters('serviceRequestNumber')]"
             },
