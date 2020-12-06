@@ -12,7 +12,7 @@
             }
         },
         "allowedLocations": {
-            "type": "array",
+            "type": "string",
             "metadata": {
                 "description": "description"
             }
