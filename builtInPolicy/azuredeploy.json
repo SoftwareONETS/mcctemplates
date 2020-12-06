@@ -18,7 +18,7 @@
             }
         },
         "allowedLocations": {
-            "type": "string",
+            "type": "array",
             "metadata": {
                 "description": "description"
             }
