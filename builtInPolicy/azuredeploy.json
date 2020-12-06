@@ -1,0 +1,44 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "policyName": {
+            "type": "string",
+            "allowedValues": [
+                "allowedLocations"
+            ],
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "allowedLocations": {
+            "type": "array",
+            "metadata": {
+                "description": "description"
+            }
+        }
+    },
+    "functions": [],
+    "variables": {
+        "policyName": "[concat('assigned-', parameters('policyName'))]",
+        "allowedLocations": "/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c",
+        "location": "[first(parameters('allowedLocations'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Authorization/policyAssignments",
+            "apiVersion": "2019-09-01",
+            "location": "[variables('location')]",
+            "properties": {
+                "description": "",
+                "displayName": "[variables('policyName')]",
+                "enforcementMode": "Default",
+                "policyDefinitionId": "[variables('allowedLocations')]",
+                "parameters": {
+                    ""
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
