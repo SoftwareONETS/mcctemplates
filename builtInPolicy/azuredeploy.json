@@ -1,9 +1,12 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "policyDefinitionName": {
             "type": "string",
+            "allowedValues": [
+                "allowedLocations"
+            ],
             "metadata": {
                 "displayName": "Policy definition name",
                 "description": "Name of the policy to assign."
@@ -15,15 +18,6 @@
                 "displayName": "Policy assignment name",
                 "description": "Name to use for a specific policy assignment."
             }
-        },
-        "resourceGroupName": {
-            "type": "string",
-            "metadata": {
-                "displayName": "Resource group to limit policy assignment scope",
-                "description": "Optional resource group name to limit the policy scope.",
-                "strongType": "existingResourceGroups"
-            },
-            "defaultValue": ""
         },
         "policyAssignmentMode": {
             "type": "string",
@@ -47,15 +41,23 @@
             }
         }
     },
+    "functions": [],
+    "variables": {
+        "allowedLocations": {
+            "policyDefinitionId": "e56962a6-4747-49cd-b67b-bf8b01975c4c"
+        },
+        "policyAssignmentName": "[concat(parameters('policyAssignmentName'), '_', parameters('policyDefinitionName'))]",
+        "policyDefinitionId": "[if(contains(parameters('policyDefinitionName'), 'allowedLocations'), variables('allowedLocations'), variables('allowedLocations'))]"
+    },
     "resources": [
         {
             "type": "Microsoft.Authorization/policyAssignments",
-            "name": "[parameters('policyAssignmentName')]",
+            "name": "[variables('policyAssignmentName')]",
             "apiVersion": "2019-09-01",
             "properties": {
-                "scope": "[if(empty(parameters('resourceGroupName')), subscription().id, concat(subscription().id, '/resourceGroups/', parameters('resourceGroupName')))]",
+                "scope": "[subscription().id]",
                 "enforcementMode": "[parameters('policyAssignmentMode')]",
-                "policyDefinitionId": "[concat(subscription().id, '/providers/Microsoft.Authorization/policyDefinitions/', parameters('policyDefinitionName'))]",
+                "policyDefinitionId": "[concat(subscription().id, '/providers/Microsoft.Authorization/policyDefinitions/', variables('policyDefinitionId'))]",
                 "parameters": "[parameters('policyParameters')]"
             }
         }
