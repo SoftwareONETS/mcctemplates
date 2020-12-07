@@ -44,7 +44,7 @@
     "functions": [],
     "variables": {
         "policyAssignmentName": "[concat(parameters('policyAssignmentName'), '_', parameters('policyDefinitionName'))]",
-        "policyDefinitionId": "e56962a6-4747-49cd-b67b-bf8b01975c4c"
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c"
     },
     "resources": [
         {
@@ -54,7 +54,7 @@
             "properties": {
                 "scope": "[subscription().id]",
                 "enforcementMode": "[parameters('policyAssignmentMode')]",
-                "policyDefinitionId": "[concat(subscription().id, '/providers/Microsoft.Authorization/policyDefinitions/', variables('policyDefinitionId'))]",
+                "policyDefinitionId": "[variables('policyDefinitionId')]",
                 "parameters": "[parameters('policyParameters')]"
             }
         }
