@@ -5,7 +5,8 @@
         "policyDefinitionName": {
             "type": "string",
             "allowedValues": [
-                "allowedLocations"
+                "allowedLocations",
+                "allowedLocationsRg"
             ],
             "metadata": {
                 "displayName": "Policy definition name",
@@ -44,10 +45,12 @@
     "functions": [],
     "variables": {
         "policyAssignmentName": "[concat(parameters('policyAssignmentName'), '_', parameters('policyDefinitionName'))]",
-        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c",
         "policyDefinitionName": {
             "allowedLocations": {
                 "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c"
+            },
+            "allowedLocationsRg": {
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/e765b5de-1225-4ba3-bd56-1ac6695af988"
             }
         }
     },
