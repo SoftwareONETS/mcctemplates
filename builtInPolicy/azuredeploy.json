@@ -6,7 +6,8 @@
             "type": "string",
             "allowedValues": [
                 "allowedLocations",
-                "allowedLocationsRg"
+                "allowedLocationsRg",
+                "allowedVirtualMachineSKU"
             ],
             "metadata": {
                 "displayName": "Policy definition name",
@@ -51,6 +52,9 @@
             },
             "allowedLocationsRg": {
                 "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/e765b5de-1225-4ba3-bd56-1ac6695af988"
+            },
+            "allowedVirtualMachineSKU": {
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/cccc23c7-8427-4f53-ad12-b6a63eb452b3"
             }
         }
     },
