@@ -36,9 +36,12 @@
         "policyParameters": {
             "type": "object",
             "allowedValues": [
-                "listOfAllowedLocations",
-                "listOfAllowedSKUs",
-                "listOfResourceTypesNotAllowed"
+                {
+                    "value":"listOfAllowedLocations"
+                },
+                {
+                    "value":"listOfAllowedSKUs"
+                }
             ],
             "metadata": {
                 "displayName": "Policy parameters",
