@@ -37,7 +37,7 @@
             "type": "object",
             "metadata": {
                 "displayName": "Policy parameters",
-                "description": "Policy parameters as an object parameter type."
+                "description": "Policy parameters as an object parameter type. (listOfAllowedLocations, listOfAllowedSKUs)"
             },
             "defaultValue": {
             }
