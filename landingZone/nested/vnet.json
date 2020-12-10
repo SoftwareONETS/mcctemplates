@@ -1,0 +1,112 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  { 
+        "serviceRequestNumber": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "VirtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "addressPrefixes": {
+            "type": "array",
+            "defaultValue": [
+                "10.10.0.0/16"
+            ],
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "bastionHostsubnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.10.0.0/27",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "subnet1AddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.10.1.0/24",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "subnet2AddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.10.2.0/24",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "subnet3AddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.10.3.0/24",
+            "metadata": {
+                "description": "description"
+            }
+        }
+    },
+    "functions": [],
+    "variables": {
+        "virtualNetworkName": "[concat(parameters('VirtualNetworkName'))]",
+        "subnetName1": "snet1",
+        "subnetName2": "snet2",
+        "subnetName3": "snet3"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-05-01",
+            "location": "[resourceGroup().location]",
+            "name": "[variables('VirtualNetworkName')]",
+            "tags": {
+                "swoBuild": "[parameters('serviceRequestNumber')]"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": "[parameters('addressPrefixes')]"
+                },
+                "subnets": [
+                    {
+                        "name": "AzureBastionSubnet",
+                        "properties": {
+                            "addressPrefix": "[parameters('bastionHostsubnetAddressPrefix')]"
+                        }
+                    },
+                    {
+                        "name": "[variables('subnetName1')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet1AddressPrefix')]"
+                        }
+                    },
+                    {
+                        "name": "[variables('subnetName2')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet2AddressPrefix')]"
+                        }
+                    },
+                    {
+                        "name": "[variables('subnetName3')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet3AddressPrefix')]"
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {
+        "resourceIds": {
+            "type": "array",
+            "value": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('VirtualNetworkName'),'AzureBastionSubnet')]"
+            ]
+        }
+    }
+}

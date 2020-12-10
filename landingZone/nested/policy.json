@@ -1,0 +1,78 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "policyDefinitionName": {
+            "type": "string",
+            "allowedValues": [
+                "allowedLocations",
+                "allowedLocationsRg",
+                "allowedVirtualMachineSKUs",
+                "notAllowedResourceTypes"
+            ],
+            "metadata": {
+                "displayName": "Policy definition name",
+                "description": "Name of the policy to assign."
+            }
+        },
+        "policyAssignmentName": {
+            "type": "string",
+            "metadata": {
+                "displayName": "Policy assignment name",
+                "description": "Name to use for a specific policy assignment."
+            }
+        },
+        "policyAssignmentMode": {
+            "type": "string",
+            "metadata": {
+                "displayName": "Policy assignment mode",
+                "description": "Enforced (default) or disabled."
+            },
+            "allowedValues": [
+                "Default",
+                "DoNotEnforce"
+            ],
+            "defaultValue": "Default"
+        },
+        "policyParameters": {
+            "type": "object",
+            "metadata": {
+                "displayName": "Policy parameters",
+                "description": "Policy parameters as an object parameter type. (listOfAllowedLocations, listOfAllowedSKUs, listOfResourceTypesNotAllowed)"
+            },
+            "defaultValue": {
+            }
+        }
+    },
+    "functions": [],
+    "variables": {
+        "policyAssignmentName": "[concat(parameters('policyAssignmentName'), '_', parameters('policyDefinitionName'))]",
+        "policyDefinitionName": {
+            "allowedLocations": {
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c"
+            },
+            "allowedLocationsRg": {
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/e765b5de-1225-4ba3-bd56-1ac6695af988"
+            },
+            "allowedVirtualMachineSKUs": {
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/cccc23c7-8427-4f53-ad12-b6a63eb452b3"
+            },
+            "notAllowedResourceTypes": {
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/6c112d4e-5bc7-47ae-a041-ea2d9dccd749"
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Authorization/policyAssignments",
+            "name": "[variables('policyAssignmentName')]",
+            "apiVersion": "2019-09-01",
+            "properties": {
+                "scope": "[subscription().id]",
+                "enforcementMode": "[parameters('policyAssignmentMode')]",
+                "policyDefinitionId": "[variables('policyDefinitionName')[parameters('policyDefinitionName')].policyDefinitionId]",
+                "parameters": "[parameters('policyParameters')]"
+            }
+        }
+    ]
+}

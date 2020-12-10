@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serviceRequestNumber": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "bastionHostName": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "bastionHostSubnetId": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        }
+    },
+    "functions": [],
+    "variables": {
+        "publicIpName": "[concat('pip-', parameters('bastionHostName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2020-05-01",
+            "location": "[resourceGroup().location]",
+            "name": "[variables('publicIpName')]",
+            "tags": {
+                "swoBuild": "[parameters('serviceRequestNumber')]"
+            },
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Static"
+            }
+        },
+        {
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]"
+            ],
+            "type": "Microsoft.Network/bastionHosts",
+            "apiVersion": "2020-05-01",
+            "location": "[resourceGroup().location]",
+            "name": "[parameters('bastionHostName')]",
+            "tags": {
+                "swoBuild": "[parameters('serviceRequestNumber')]"
+            },
+            "properties": {
+                "dnsName": "[concat('ext-', parameters('bastionHostName'))]",
+                "ipConfigurations": [
+                    {
+                        "name": "ipName",
+                        "properties": {
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[parameters('bastionHostSubnetId')]"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
