@@ -1,10 +1,92 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {},
+    "parameters": {
+        "serviceRequestNumber": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "policyDefinitionName": {
+            "type": "string",
+            "allowedValues": [
+                "allowedLocations",
+                "allowedLocationsRg",
+                "allowedVirtualMachineSKUs",
+                "notAllowedResourceTypes"
+            ],
+            "metadata": {
+                "displayName": "Policy definition name",
+                "description": "Name of the policy to assign."
+            }
+        },
+        "policyAssignmentName": {
+            "type": "string",
+            "metadata": {
+                "displayName": "Policy assignment name",
+                "description": "Name to use for a specific policy assignment."
+            }
+        },
+        "policyParameters": {
+            "type": "object",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "VirtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "addressPrefixes": {
+            "type": "array",
+            "defaultValue": [
+                "10.10.0.0/16"
+            ],
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "bastionHostsubnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.10.0.0/27",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "subnet1AddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.10.1.0/24",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "subnet2AddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.10.2.0/24",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "subnet3AddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.10.3.0/24",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "bastionHostName": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        }
+    },
     "functions": [],
     "variables": {
-        "baseUri": "value"
+        "baseUri": "https://raw.githubusercontent.com/SoftwareONETS/mcctemplates/main/landingZone/nested/"
     },
     "resources": [
         {
@@ -17,10 +99,14 @@
                 },
                 "mode": "Incremental",
                 "templateLink": {
-                    "contentVersion": "",
-                    "uri": ""
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[concat(variables('baseUri'),'policy.json')]"
                 },
-                "parameters": {}
+                "parameters": {
+                    "policyDefinitionName": "[parameters('policyDefinitionName')]",
+                    "policyAssignmentName": "[parameters('policyAssignmentName')]",
+                    "policyParameters": "[parameters('policyParameters')]"
+                }
             }
         },
         {
@@ -29,16 +115,21 @@
             "apiVersion": "2019-10-01",
             "properties": {
                 "expressionEvaluationOptions": {
-                    "scope": "outer"
+                    "scope": "inner"
                 },
                 "mode": "Incremental",
-                "template": {
-                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                "templateLink": {
                     "contentVersion": "1.0.0.0",
-                    "parameters": {},
-                    "variables": {},
-                    "resources": [],
-                    "outputs": {}
+                    "uri": "[concat(variables('baseUri'),'vnet.json')]"
+                },
+                "parameters": {
+                    "serviceRequestNumber": "[parameters('serviceRequestNumber')]",
+                    "VirtualNetworkName": "[parameters('VirtualNetworkName')]",
+                    "addressPrefixes": "[parameters('addressPrefixes')]",
+                    "bastionHostsubnetAddressPrefix": "[parameters('bastionHostsubnetAddressPrefix')]",
+                    "subnet1AddressPrefix": "[parameters('subnet1AddressPrefix')]",
+                    "subnet2AddressPrefix": "[parameters('subnet2AddressPrefix')]",
+                    "subnet3AddressPrefix": "[parameters('subnet3AddressPrefix')]"
                 }
             }
         },
@@ -52,13 +143,14 @@
                     "scope": "outer"
                 },
                 "mode": "Incremental",
-                "template": {
-                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                "templateLink": {
                     "contentVersion": "1.0.0.0",
-                    "parameters": {},
-                    "variables": {},
-                    "resources": [],
-                    "outputs": {}
+                    "uri": "[concat(variables('baseUri'),'bastionHost.json')]"
+                },
+                "parameters": {
+                    "serviceRequestNumber": "[parameters('serviceRequestNumber')]",
+                    "bastionHostName": "[parameters('bastionHostName')]",
+                    "bastionHostSubnetId": "[reference('deployVirtualNetwork').outputs.resourceId.value]"
                 }
             }
         }
