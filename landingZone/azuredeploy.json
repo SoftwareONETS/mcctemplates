@@ -115,7 +115,7 @@
             "apiVersion": "2019-10-01",
             "properties": {
                 "expressionEvaluationOptions": {
-                    "scope": "inner"
+                    "scope": "outer"
                 },
                 "mode": "Incremental",
                 "templateLink": {
