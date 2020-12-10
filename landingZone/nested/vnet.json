@@ -103,10 +103,8 @@
     ],
     "outputs": {
         "resourceId": {
-            "type": "array",
-            "value": [
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('VirtualNetworkName'),'AzureBastionSubnet')]"
-            ]
+            "type": "string",
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('VirtualNetworkName'),'AzureBastionSubnet')]"
         }
     }
 }

@@ -103,9 +103,15 @@
                     "uri": "[concat(variables('baseUri'),'policy.json')]"
                 },
                 "parameters": {
-                    "policyDefinitionName": "[parameters('policyDefinitionName')]",
-                    "policyAssignmentName": "[parameters('policyAssignmentName')]",
-                    "policyParameters": "[parameters('policyParameters')]"
+                    "policyDefinitionName": {
+                        "value": "[parameters('policyDefinitionName')]"
+                    },
+                    "policyAssignmentName": {
+                        "value": "[parameters('policyAssignmentName')]"
+                    },
+                    "policyParameters": { 
+                        "value": "[parameters('policyParameters')]"
+                    }
                 }
             }
         },
@@ -123,13 +129,27 @@
                     "uri": "[concat(variables('baseUri'),'vnet.json')]"
                 },
                 "parameters": {
-                    "serviceRequestNumber": "[parameters('serviceRequestNumber')]",
-                    "VirtualNetworkName": "[parameters('VirtualNetworkName')]",
-                    "addressPrefixes": "[parameters('addressPrefixes')]",
-                    "bastionHostsubnetAddressPrefix": "[parameters('bastionHostsubnetAddressPrefix')]",
-                    "subnet1AddressPrefix": "[parameters('subnet1AddressPrefix')]",
-                    "subnet2AddressPrefix": "[parameters('subnet2AddressPrefix')]",
-                    "subnet3AddressPrefix": "[parameters('subnet3AddressPrefix')]"
+                    "serviceRequestNumber": {
+                        "value": "[parameters('serviceRequestNumber')]"
+                    },
+                    "VirtualNetworkName": {
+                        "value": "[parameters('VirtualNetworkName')]"
+                    },
+                    "addressPrefixes": {
+                        "value": "[parameters('addressPrefixes')]"
+                    },
+                    "bastionHostsubnetAddressPrefix": {
+                        "value": "[parameters('bastionHostsubnetAddressPrefix')]"
+                    },
+                    "subnet1AddressPrefix": {
+                        "value": "[parameters('subnet1AddressPrefix')]"
+                    },
+                    "subnet2AddressPrefix": {
+                        "value": "[parameters('subnet2AddressPrefix')]"
+                    },
+                    "subnet3AddressPrefix": {
+                        "value": "[parameters('subnet3AddressPrefix')]"
+                    }
                 }
             }
         },
@@ -148,9 +168,15 @@
                     "uri": "[concat(variables('baseUri'),'bastionHost.json')]"
                 },
                 "parameters": {
-                    "serviceRequestNumber": "[parameters('serviceRequestNumber')]",
-                    "bastionHostName": "[parameters('bastionHostName')]",
-                    "bastionHostSubnetId": "[reference('deployVirtualNetwork').outputs.resourceId.value]"
+                    "serviceRequestNumber": {
+                        "value": "[parameters('serviceRequestNumber')]"
+                    },
+                    "bastionHostName": {
+                        "value": "[parameters('bastionHostName')]"
+                    },
+                    "bastionHostSubnetId": {
+                        "value": "[reference('deployVirtualNetwork').outputs.resourceId.value]"
+                    }
                 }
             }
         }
