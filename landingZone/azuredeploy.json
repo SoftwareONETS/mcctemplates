@@ -4,24 +4,28 @@
     "parameters": {
         "serviceRequestNumber": {
             "type": "string",
+            "defaultValue": "SREQ20201211",
             "metadata": {
                 "description": "description"
             }
         },
         "resourceGroupName": {
             "type": "string",
+            "defaultValue": "rg-demo-dev",
             "metadata": {
                 "description": "description"
             }
         },
         "location": {
             "type": "string",
+            "defaultValue": "westeurope",
             "metadata": {
                 "description": "description"
             }
         },
         "policyDefinitionName": {
             "type": "string",
+            "defaultValue": "allowedLocations",
             "allowedValues": [
                 "allowedLocations",
                 "allowedLocationsRg",
@@ -35,6 +39,7 @@
         },
         "policyAssignmentName": {
             "type": "string",
+            "defaultValue": "assigned_",
             "metadata": {
                 "displayName": "Policy assignment name",
                 "description": "Name to use for a specific policy assignment."
@@ -51,11 +56,12 @@
                 }
             },
             "metadata": {
-                "description": "description"
+                "description": "Policy parameters as an object parameter type. (listOfAllowedLocations, listOfAllowedSKUs, listOfResourceTypesNotAllowed)"
             }
         },
         "VirtualNetworkName": {
             "type": "string",
+            "defaultValue": "vnet-demo-dev",
             "metadata": {
                 "description": "description"
             }
@@ -99,6 +105,7 @@
         },
         "bastionHostName": {
             "type": "string",
+            "defaultValue": "bh-demo-dev",
             "metadata": {
                 "description": "description"
             }
@@ -109,15 +116,6 @@
         "baseUri": "https://raw.githubusercontent.com/SoftwareONETS/mcctemplates/main/landingZone/nested/"
     },
     "resources": [
-        {
-            "type": "Microsoft.Resources/resourceGroups",
-            "apiVersion": "2020-10-01",
-            "location": "[parameters('location')]",
-            "name": "[parameters('resourceGroupName')]",
-            "tags": {
-                "swoBuild": "[parameters('serviceRequestNumber')]"
-            }
-        },
         {
             "name": "assignPolicy",
             "type": "Microsoft.Resources/deployments",
@@ -146,9 +144,36 @@
             }
         },
         {
+            "name": "createResourceGroup",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "outer"
+                },
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[concat(variables('baseUri'),'resourceGroup.json')]"
+                },
+                "parameters": {
+                    "serviceRequestNumber": {
+                        "value": "[parameters('serviceRequestNumber')]"
+                    },
+                    "resourceGroupName": {
+                        "value": "[parameters('resourceGroupName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
-                ],
+                "createResourceGroup"
+            ],
             "name": "deployVirtualNetwork",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
@@ -190,7 +215,7 @@
         {
             "dependsOn": [
                 "deployVirtualNetwork"
-                ],
+            ],
             "name": "deployBastionHost",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
