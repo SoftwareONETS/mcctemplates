@@ -71,6 +71,7 @@
             "type": "Microsoft.Authorization/policyAssignments",
             "name": "[variables('policyAssignmentName')]",
             "apiVersion": "2019-09-01",
+            "location": "[deployment().location]",
             "identity": {
                 "type": "SystemAssigned"
                 },
