@@ -1,8 +1,0 @@
-{
-  "subscriptionId": "Azure",
-  "resourceGroupName": "MyRg",
-  "location": "westeurope",
-  "serviceRequestNumber": "SREQ20201205",
-  "storageAccountName": "FIEK",
-  "storageAccountType": "Standard_LRS"
-}
