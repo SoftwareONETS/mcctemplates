@@ -1,0 +1,251 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serviceRequestNumber": {
+            "type": "string",
+            "defaultValue": "SREQ20201211",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "resourceGroupName": {
+            "type": "string",
+            "defaultValue": "rg-demo-dev",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "westeurope",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "policyDefinitionName": {
+            "type": "string",
+            "defaultValue": "deployDiagnosticSettingsForNetworkSecurityGroups",
+            "allowedValues": [
+                "allowedLocations",
+                "allowedLocationsRg",
+                "allowedVirtualMachineSKUs",
+                "notAllowedResourceTypes",
+                "deployDiagnosticSettingsForNetworkSecurityGroups"
+            ],
+            "metadata": {
+                "displayName": "Policy definition name",
+                "description": "Name of the policy to assign."
+            }
+        },
+        "policyAssignmentName": {
+            "type": "string",
+            "defaultValue": "assigned_",
+            "metadata": {
+                "displayName": "Policy assignment name",
+                "description": "Name to use for a specific policy assignment."
+            }
+        },
+        "policyParameters": {
+            "type": "object",
+            "defaultValue": {
+                "storagePrefix": {
+                    "value": "sadiag"
+                },
+                "rgName": {
+                    "value": "[parameters('resourceGroupName')]"
+                }
+            },
+            "metadata": {
+                "description": "Policy parameters as an object parameter type. (listOfAllowedLocations, listOfAllowedSKUs, listOfResourceTypesNotAllowed)"
+            }
+        },
+        "VirtualNetworkName": {
+            "type": "string",
+            "defaultValue": "vnet-demo-dev",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "addressPrefixes": {
+            "type": "array",
+            "defaultValue": [
+                "10.10.0.0/16"
+            ],
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "bastionHostsubnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.10.0.0/27",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "subnet1AddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.10.1.0/24",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "subnet2AddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.10.2.0/24",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "subnet3AddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.10.3.0/24",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "bastionHostName": {
+            "type": "string",
+            "defaultValue": "bh-demo-dev",
+            "metadata": {
+                "description": "description"
+            }
+        }
+    },
+    "functions": [],
+    "variables": {
+        "baseUri": "https://raw.githubusercontent.com/SoftwareONETS/mcctemplates/main/landingZone/nested/"
+    },
+    "resources": [
+        {
+            "dependsOn": [
+                "createResourceGroup"
+            ],
+            "name": "assignPolicy",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "outer"
+                },
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[concat(variables('baseUri'),'policy.json')]"
+                },
+                "parameters": {
+                    "policyDefinitionName": {
+                        "value": "[parameters('policyDefinitionName')]"
+                    },
+                    "policyAssignmentName": {
+                        "value": "[parameters('policyAssignmentName')]"
+                    },
+                    "policyParameters": {
+                        "value": "[parameters('policyParameters')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "createResourceGroup",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "outer"
+                },
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[concat(variables('baseUri'),'resourceGroup.json')]"
+                },
+                "parameters": {
+                    "serviceRequestNumber": {
+                        "value": "[parameters('serviceRequestNumber')]"
+                    },
+                    "resourceGroupName": {
+                        "value": "[parameters('resourceGroupName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "dependsOn": [
+                "createResourceGroup"
+            ],
+            "name": "deployVirtualNetwork",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "resourceGroup": "[parameters('resourceGroupName')]",
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "outer"
+                },
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[concat(variables('baseUri'),'vnet.json')]"
+                },
+                "parameters": {
+                    "serviceRequestNumber": {
+                        "value": "[parameters('serviceRequestNumber')]"
+                    },
+                    "VirtualNetworkName": {
+                        "value": "[parameters('VirtualNetworkName')]"
+                    },
+                    "addressPrefixes": {
+                        "value": "[parameters('addressPrefixes')]"
+                    },
+                    "bastionHostsubnetAddressPrefix": {
+                        "value": "[parameters('bastionHostsubnetAddressPrefix')]"
+                    },
+                    "subnet1AddressPrefix": {
+                        "value": "[parameters('subnet1AddressPrefix')]"
+                    },
+                    "subnet2AddressPrefix": {
+                        "value": "[parameters('subnet2AddressPrefix')]"
+                    },
+                    "subnet3AddressPrefix": {
+                        "value": "[parameters('subnet3AddressPrefix')]"
+                    }
+                }
+            }
+        },
+        {
+            "dependsOn": [
+                "deployVirtualNetwork"
+            ],
+            "name": "deployBastionHost",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "resourceGroup": "[parameters('resourceGroupName')]",
+            "properties": {
+                "expressionEvaluationOptions": {
+                    "scope": "outer"
+                },
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[concat(variables('baseUri'),'bastionHost.json')]"
+                },
+                "parameters": {
+                    "serviceRequestNumber": {
+                        "value": "[parameters('serviceRequestNumber')]"
+                    },
+                    "bastionHostName": {
+                        "value": "[parameters('bastionHostName')]"
+                    },
+                    "bastionHostSubnetId": {
+                        "value": "[reference('deployVirtualNetwork').outputs.resourceId.value]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

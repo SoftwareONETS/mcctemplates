@@ -8,7 +8,8 @@
                 "allowedLocations",
                 "allowedLocationsRg",
                 "allowedVirtualMachineSKUs",
-                "notAllowedResourceTypes"
+                "notAllowedResourceTypes",
+                "deployDiagnosticSettingsForNetworkSecurityGroups"
             ],
             "metadata": {
                 "displayName": "Policy definition name",
@@ -38,7 +39,7 @@
             "type": "object",
             "metadata": {
                 "displayName": "Policy parameters",
-                "description": "Policy parameters as an object parameter type. (listOfAllowedLocations, listOfAllowedSKUs, listOfResourceTypesNotAllowed)"
+                "description": "Policy parameters as an object parameter type. (listOfAllowedLocations, listOfAllowedSKUs, listOfResourceTypesNotAllowed, storagePrefix & rgName)"
             },
             "defaultValue": {
             }
@@ -59,6 +60,9 @@
             },
             "notAllowedResourceTypes": {
                 "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/6c112d4e-5bc7-47ae-a041-ea2d9dccd749"
+            },
+            "deployDiagnosticSettingsForNetworkSecurityGroups": {
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/c9c29499-c1d1-4195-99bd-2ec9e3a9dc89"
             }
         }
     },
