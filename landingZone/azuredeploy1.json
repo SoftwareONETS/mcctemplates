@@ -16,13 +16,6 @@
                 "description": "description"
             }
         },
-        "location": {
-            "type": "string",
-            "defaultValue": "westeurope",
-            "metadata": {
-                "description": "description"
-            }
-        },
         "policyDefinitionName": {
             "type": "string",
             "defaultValue": "allowedLocations",
@@ -120,7 +113,7 @@
             "name": "assignPolicy",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
-            "location": "[parameters('location')]",
+            "location": "[deployment().location]",
             "properties": {
                 "expressionEvaluationOptions": {
                     "scope": "outer"
@@ -147,7 +140,7 @@
             "name": "createResourceGroup",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
-            "location": "[parameters('location')]",
+            "location": "[deployment().location]",
             "properties": {
                 "expressionEvaluationOptions": {
                     "scope": "outer"
@@ -163,9 +156,6 @@
                     },
                     "resourceGroupName": {
                         "value": "[parameters('resourceGroupName')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
                     }
                 }
             }
