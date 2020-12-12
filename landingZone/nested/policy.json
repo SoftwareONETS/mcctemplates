@@ -68,6 +68,19 @@
     },
     "resources": [
         {
+            "condition": "[not(equals(parameters('policyDefinitionName'),'deployDiagnosticSettingsForNetworkSecurityGroups'))]",
+            "type": "Microsoft.Authorization/policyAssignments",
+            "name": "[variables('policyAssignmentName')]",
+            "apiVersion": "2019-09-01",
+            "properties": {
+                "scope": "[subscription().id]",
+                "enforcementMode": "[parameters('policyAssignmentMode')]",
+                "policyDefinitionId": "[variables('policyDefinitionName')[parameters('policyDefinitionName')].policyDefinitionId]",
+                "parameters": "[parameters('policyParameters')]"
+            }
+        },
+        {
+            "condition": "[equals(parameters('policyDefinitionName'),'deployDiagnosticSettingsForNetworkSecurityGroups')]",
             "type": "Microsoft.Authorization/policyAssignments",
             "name": "[variables('policyAssignmentName')]",
             "apiVersion": "2019-09-01",
