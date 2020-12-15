@@ -1,261 +1,236 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "serviceRequestNumber": {
-        "type": "string",
-        "metadata": {
-            "description": "Enter Service Request Number"
-        }
-    },  
-    "adminUsername": {
-      "type": "string",
-      "metadata": {
-        "description": "Username for the Virtual Machine."
-      }
-    },
-    "windowsOrRedHat": {
-      "type": "string",
-      "allowedValues": [
-        "Windows",
-        "RedHat"
-      ],
-      "defaultValue": "Windows",
-      "metadata": {
-        "description": "Operation System for the Virtual Machine."
-      }
-    },
-    "authenticationType": {
-      "type": "string",
-      "defaultValue": "password",
-      "allowedValues": [
-        "sshPublicKey",
-        "password"
-      ],
-      "metadata": {
-        "description": "Type of authentication to use on the Virtual Machine. SSH key is recommended."
-      }
-    },
-    "adminPasswordOrKey": {
-      "type": "securestring",
-      "metadata": {
-        "description": "SSH Key or password for the Virtual Machine. SSH key is recommended."
-      }
-    },
-    "VirtualMachineName": {
-      "type": "string"
-   },
-    "VirtualMachineInstanceType": {
-        "type": "string",
-        "defaultValue": "Standard_D2_v2"
-    },
-    "VirtualNetworkResourceGroupName": {
-      "type": "string"
-    },
-    "VirtualNetworkName": {
-      "type": "string"
-    },
-    "subnetName": {
-      "type": "string"
-    }
-  },
-  "variables": {
-    "pipName": "pip",
-    "dnsLabelPrefix": "dnsLabelPrefix",  
-    "location": "[resourceGroup().location]",
-    "nsgName": "[concat('pip-', parameters('VirtualMachineName'))]",
-    "createVNET": false,
-    "storageAccountName": "[concat('diags', uniquestring(resourceGroup().id))]",
-    "nicName": "[concat('nic-', parameters('VirtualMachineName'))]",
-    "addressPrefix": "10.10.0.0/16",
-    "subnetName": "[parameters('subnetName')]",
-    "subnetPrefix": "10.10.10/24",
-    "publicIPAddressName": "[concat(variables('pipName'),'-', parameters('VirtualMachineName'))]",
-    "vmName": "[concat('vm-', parameters('VirtualMachineName'))]",
-    "virtualNetworkName": "[parameters('VirtualNetworkName')]",
-    "networkSecurityGroupName": "[variables('nsgName')]",
-    "subnetRef": "[resourceId(parameters('VirtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
-    "vmSize": "[parameters('VirtualMachineInstanceType')]",
-    "windowsImage": {
-      "publisher": "MicrosoftWindowsServer",
-      "offer": "WindowsServer",
-      "sku": "2016-Datacenter",
-      "version": "latest"
-    },
-    "linuxImage": {
-      "publisher": "RedHat",
-      "offer": "RHEL",
-      "sku": "8.2",
-      "version": "latest"
-    },
-    "linuxConfiguration": {
-      "disablePasswordAuthentication": true,
-      "ssh": {
-        "publicKeys": [
-          {
-            "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
-            "keyData": "[parameters('adminPasswordOrKey')]"
-          }
-        ]
-      }
-    }
-  },
-  "resources": [
-    {
-      "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('storageAccountName')]",
-      "apiVersion": "2019-06-01",
-      "location": "[variables('location')]",
-      "sku": {
-        "name": "Standard_LRS"
-      },
-      "kind": "Storage",
-      "properties": {}
-    },
-    {
-      "apiVersion": "2020-05-01",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('publicIPAddressName')]",
-      "location": "[variables('location')]",
-      "condition": "[variables('createVNET')]",
-      "sku": {
-        "name": "Standard"
-      },
-      "properties": {
-        "publicIPAllocationMethod": "Static",
-        "dnsSettings": {
-          "domainNameLabel": "[variables('dnsLabelPrefix')]"
-        }
-      }
-    },
-    {
-      "apiVersion": "2020-05-01",
-      "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[variables('networkSecurityGroupName')]",
-      "location": "[variables('location')]",
-      "properties": {
-        "securityRules": [
-          {
-            "name": "RemoteConnection",
-            "properties": {
-              "description": "Allow RDP/SSH",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "[if(equals(parameters('windowsOrRedHat'), 'Windows'), 3389, 22)]",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Deny",
-              "priority": 100,
-              "direction": "Inbound"
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachineName": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
             }
-          }
-        ]
-      }
-    },
-    {
-      "apiVersion": "2020-05-01",
-      "type": "Microsoft.Network/virtualNetworks",
-      "name": "[variables('virtualNetworkName')]",
-      "location": "[variables('location')]",
-      "dependsOn": [
-                "[concat('Microsoft.Network/networkSecurityGroups/', variables('networkSecurityGroupName'))]"
+        },
+        "virtualMachineSize": {
+            "type": "string",
+            "defaultValue": "Standard_D2s_v3",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "windowsOrRedHat": {
+            "type": "string",
+            "allowedValues": [
+                "Windows",
+                "RedHat"
             ],
-      "condition": "[variables('createVNET')]",
-      "properties": {
-        "addressSpace": {
-          "addressPrefixes": [
-            "[variables('addressPrefix')]"
-          ]
-        },
-        "subnets": [
-          {
-            "name": "[variables('subnetName')]",
-            "properties": {
-              "addressPrefix": "[variables('subnetPrefix')]"
+            "defaultValue": "Windows",
+            "metadata": {
+                "description": "Operation System for the Virtual Machine."
             }
-          }
-        ]
-      }
-    },
-    {
-      "apiVersion": "2020-05-01",
-      "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('nicName')]",
-      "location": "[variables('location')]",
-      "dependsOn": [
-        "[variables('virtualNetworkName')]",
-        "[variables('networkSecurityGroupName')]"
-      ],
-      "properties": {
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
         },
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAllocationMethod": "Dynamic",
-              "subnet": {
-                "id": "[variables('subnetRef')]"
-              }
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
             }
-          }
-        ]
-      }
-    },
-    {
-      "apiVersion": "2019-07-01",
-      "type": "Microsoft.Compute/virtualMachines",
-      "name": "[variables('vmName')]",
-      "zones": [
-        "1"
-      ],
-      "location": "[variables('location')]",
-      "dependsOn": [
-        "[variables('storageAccountName')]",
-        "[variables('nicName')]"
-      ],
-      "tags": {
-          "swoBuild": "[parameters('serviceRequestNumber')]"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "[variables('vmSize')]"
         },
-        "osProfile": {
-          "computerName": "[variables('vmName')]",
-          "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPasswordOrKey')]",
-          "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), json('null'), variables('linuxConfiguration'))]"
-        },
-        "storageProfile": {
-          "imageReference": "[if(equals(parameters('windowsOrRedHat'), 'Windows'), variables('windowsImage'), variables('linuxImage'))]",
-          "osDisk": {
-            "createOption": "FromImage"
-          },
-          "dataDisks": [
-            {
-              "diskSizeGB": 1023,
-              "lun": 0,
-              "createOption": "Empty"
+        "adminSecret": {
+            "type": "securestring",
+            "metadata": {
+                "description": "description"
             }
-          ]
         },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+        "authenticationType": {
+            "type": "string",
+            "allowedValues": [
+                "password",
+                "key"
+            ],
+            "metadata": {
+                "description": "description"
             }
-          ]
         },
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true,
-            "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
-          }
+        "subnetReferenceId": {
+            "type": "string",
+            "defaultValue": "/subscriptions/071488dd-f4ea-4dc1-a295-e39af4a0e3de/resourceGroups/demo/providers/Microsoft.Network/virtualNetworks/vnet/subnets/default",
+            "metadata": {
+                "description": "description"
+            }
         }
-      }
-    }
-  ],
-  "outputs": {}
+    },
+    "functions": [],
+    "variables": {
+        "storageAccountName": "[concat('diag', uniqueString(resourceGroup().id))]",
+        "networkSecurityGroupName": "[concat(parameters('virtualMachineName'), '-nsg')]",
+        "publicIPAddress": "[concat(parameters('virtualMachineName'), '-pip')]",
+        "networkInterfaceName": "[concat(parameters('virtualMachineName'), '-nic')]",
+        "virtualMachineName": "[concat(parameters('virtualMachineName'), '-vm')]",
+        "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+                "publicKeys": [
+                    {
+                        "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                        "keyData": "[parameters('adminSecret')]"
+                    }
+                ]
+            }
+        },
+        "windowsImage": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-Datacenter",
+            "version": "latest"
+        },
+        "linuxImage": {
+            "publisher": "RedHat",
+            "offer": "RHEL",
+            "sku": "8.2",
+            "version": "latest"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "location": "[resourceGroup().location]",
+            "name": "[variables('storageAccountName')]",
+            "kind": "StorageV2",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "tags": {
+                "tagName": "tagValue"
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-05-01",
+            "location": "[resourceGroup().location]",
+            "name": "[variables('networkSecurityGroupName')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "RemoteConnection",
+                        "properties": {
+                            "description": "Allow RDP/SSH",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "[if(equals(parameters('windowsOrRedHat'), 'Windows'), 3389, 22)]",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "tags": {
+                "tagName": "tagValue"
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-11-01",
+            "location": "[resourceGroup().location]",
+            "name": "[variables('publicIPAddress')]",
+            "zones": [
+                "1"
+            ],
+            "sku": {
+                "name": "Basic"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic"
+            },
+            "tags": {
+                "tagName": "tagValue"
+            }
+        },
+        {
+            "dependsOn": [
+                "[variables('networkSecurityGroupName')]",
+                "[variables('publicIPAddress')]"
+                ],
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2020-05-01",
+            "location": "[resourceGroup().location]",
+            "name": "[variables('networkInterfaceName')]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "IPconfig1",
+                        "properties": {
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddress'))]"
+                            },
+                            "privateIPAddress": "Dynamic",
+                            "subnet": {
+                                "id": "[parameters('subnetReferenceId')]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+                }
+            },
+            "tags": {
+                "tagName": "tagValue"
+            }
+        },
+        {
+            "dependsOn": [
+                "[variables('storageAccountName')]",
+                "[variables('networkInterfaceName')]"
+            ],
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "location": "[resourceGroup().location]",
+            "name": "[variables('virtualMachineName')]",
+            "zones": [
+                "1"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('virtualMachineSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachineName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminSecret')]",
+                    "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), json('null'), variables('linuxConfiguration'))]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]",
+                            "properties": {
+                                "primary": true
+                            }
+                        }
+                    ]
+                },
+                "storageProfile": {
+                    "imageReference": "[if(equals(parameters('windowsOrRedHat'), 'Windows'), variables('windowsImage'), variables('linuxImage'))]",
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": [
+                        {
+                            "diskSizeGB": 1023,
+                            "lun": 0,
+                            "createOption": "Empty"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {}
 }
