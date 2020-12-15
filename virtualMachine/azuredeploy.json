@@ -2,6 +2,12 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "serviceRequestNumber": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
         "virtualMachineName": {
             "type": "string",
             "metadata": {
@@ -40,6 +46,7 @@
         },
         "authenticationType": {
             "type": "string",
+            "defaultValue": "password",
             "allowedValues": [
                 "password",
                 "key"
@@ -50,9 +57,8 @@
         },
         "subnetReferenceId": {
             "type": "string",
-            "defaultValue": "/subscriptions/071488dd-f4ea-4dc1-a295-e39af4a0e3de/resourceGroups/demo/providers/Microsoft.Network/virtualNetworks/vnet/subnets/default",
             "metadata": {
-                "description": "description"
+                "description": "/subscriptions/[subscriptionId]/resourceGroups/[resourecGroupName]/providers/Microsoft.Network/virtualNetworks/[virtualNetworkName]/subnets/[subnetName]"
             }
         }
     },
@@ -98,7 +104,7 @@
                 "name": "Standard_LRS"
             },
             "tags": {
-                "tagName": "tagValue"
+                "swoBuild": "[parameters('serviceRequestNumber')]"
             }
         },
         {
@@ -125,7 +131,7 @@
                 ]
             },
             "tags": {
-                "tagName": "tagValue"
+                "swoBuild": "[parameters('serviceRequestNumber')]"
             }
         },
         {
@@ -143,7 +149,7 @@
                 "publicIPAllocationMethod": "Dynamic"
             },
             "tags": {
-                "tagName": "tagValue"
+                "swoBuild": "[parameters('serviceRequestNumber')]"
             }
         },
         {
@@ -175,7 +181,7 @@
                 }
             },
             "tags": {
-                "tagName": "tagValue"
+                "swoBuild": "[parameters('serviceRequestNumber')]"
             }
         },
         {
@@ -229,6 +235,9 @@
                         "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
                     }
                 }
+            },
+            "tags": {
+                "swoBuild": "[parameters('serviceRequestNumber')]"
             }
         }
     ],
