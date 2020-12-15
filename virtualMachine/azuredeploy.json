@@ -21,11 +21,12 @@
                 "description": "description"
             }
         },
-        "windowsOrRedHat": {
+        "osType": {
             "type": "string",
             "allowedValues": [
                 "Windows",
-                "RedHat"
+                "RedHat",
+                "Suse"
             ],
             "defaultValue": "Windows",
             "metadata": {
@@ -80,17 +81,31 @@
                 ]
             }
         },
-        "windowsImage": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2016-Datacenter",
-            "version": "latest"
-        },
-        "linuxImage": {
-            "publisher": "RedHat",
-            "offer": "RHEL",
-            "sku": "8.2",
-            "version": "latest"
+        "imageReference": {
+            "Windows": {
+                "imageReference": {
+                    "publisher": "MicrosoftWindowsServer",
+                    "offer": "WindowsServer",
+                    "sku": "2016-Datacenter",
+                    "version": "latest"
+                }
+            },
+            "RedHat": {
+                "imageReference": {
+                    "publisher": "RedHat",
+                    "offer": "RHEL",
+                    "sku": "8.2",
+                    "version": "latest"
+                }
+            },
+            "Suse": {
+                "imageReference": {
+                    "publisher": "Suse",
+                    "offer": "SLES",
+                    "sku": "12-sp4-gen2",
+                    "version": "latest"
+                }
+            }
         }
     },
     "resources": [
@@ -120,7 +135,7 @@
                             "description": "Allow RDP/SSH",
                             "protocol": "Tcp",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "[if(equals(parameters('windowsOrRedHat'), 'Windows'), 3389, 22)]",
+                            "destinationPortRange": "[if(equals(parameters('osType'), 'Windows'), 3389, 22)]",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "*",
                             "access": "Deny",
@@ -217,7 +232,7 @@
                     ]
                 },
                 "storageProfile": {
-                    "imageReference": "[if(equals(parameters('windowsOrRedHat'), 'Windows'), variables('windowsImage'), variables('linuxImage'))]",
+                    "imageReference": "[variables('imageReference')[parameters('osType')].imageReference]",
                     "osDisk": {
                         "createOption": "FromImage"
                     },
