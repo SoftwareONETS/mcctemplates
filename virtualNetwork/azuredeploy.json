@@ -1,0 +1,91 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":  { 
+        "serviceRequestNumber": {
+            "type": "string",
+            "defaultValue": "sreq123456789",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "VirtualNetworkName": {
+            "type": "string",
+            "defaultValue": "vnet1",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "addressPrefixes": {
+            "type": "array",
+            "defaultValue": [
+                "10.10.0.0/16"
+            ],
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "subnets": {
+            "type": "array",
+            "defaultValue": [
+                {
+                    "name": "snet1",
+                    "ipScheme": "10.10.1.0/24"
+                },
+                {
+                    "name": "snet2",
+                    "ipScheme": "10.10.2.0/24"
+                },
+                {
+                    "name": "snet3",
+                    "ipScheme": "10.10.3.0/24"
+                }
+            ],
+            "metadata": {
+                "description": "Add extra subnets, ensure subnets prefix matchess vnet prefix"
+            }
+        }
+    },
+    "functions": [],
+    "variables": {
+        "virtualNetworkName": "[concat(parameters('VirtualNetworkName'))]",
+        "subnets": "[parameters('subnets')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-05-01",
+            "location": "[resourceGroup().location]",
+            "name": "[variables('VirtualNetworkName')]",
+            "tags": {
+                "swoBuild": "[parameters('serviceRequestNumber')]"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": "[parameters('addressPrefixes')]"
+                }
+            }
+        },
+        {
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('VirtualNetworkName'))]"
+            ],
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-05-01",
+            "location": "[resourceGroup().location]",
+            "name": "[concat(variables('virtualNetworkName'), '/', variables('subnets')[copyIndex()].name)]",
+            "tags": {
+                "swoBuild": "[parameters('serviceRequestNumber')]"
+            },
+            "properties": {
+                "addressPrefix": "[variables('subnets')[copyIndex()].ipScheme]"
+            },
+            "copy": {
+                "name": "copySubnet",
+                "count": "[length(variables('subnets'))]",
+                "mode": "Serial"
+            }
+        }
+    ],
+    "outputs": {}
+}
